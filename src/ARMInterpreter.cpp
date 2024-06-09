@@ -266,6 +266,25 @@ void A_MRC(ARM* cpu)
 
 void A_SVC(ARM* cpu)
 {
+    // Print from game. Execute `svc 0xFC0000` with the null-terminated string address in `r0`.
+    // Shift by 16 to ignore unused lower bits
+    // From gbatek https://problemkaputt.de/gbatek.htm#biosfunctions:
+    // > SWIs can be called from both within THUMB and ARM mode. In ARM mode, only the upper 8bit of the 24bit comment field are interpreted.
+    if (((cpu->CurInstr >> 16) & 0xFF) == 0xFC && cpu->NDS.GetDebugPrint())
+    {
+        u32 addr = cpu->R[0];
+        std::string output;
+        for (;;)
+        {
+            u32 c;
+            cpu->DataRead8(addr++, &c);
+            if (!c) break;
+            output += c;
+        }
+        Platform::Log(LogLevel::Info, "%s", output.c_str());
+        return;
+    }
+
     u32 oldcpsr = cpu->CPSR;
     cpu->CPSR &= ~0xBF;
     cpu->CPSR |= 0x93;
