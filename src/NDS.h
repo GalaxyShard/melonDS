@@ -235,6 +235,7 @@ private:
 #ifdef GDBSTUB_ENABLED
     bool EnableGDBStub = false;
 #endif
+    bool DebugPrint;
 
 public: // TODO: Encapsulate the rest of these members
     void* UserData;
@@ -387,6 +388,9 @@ public: // TODO: Encapsulate the rest of these members
     const u8* GetGBASave() const { return GBACartSlot.GetSaveMemory(); }
     u32 GetGBASaveLength() const { return GBACartSlot.GetSaveMemoryLength(); }
     void SetGBASave(const u8* savedata, u32 savelen);
+
+    bool GetDebugPrint() const { return DebugPrint; }
+    void SetDebugPrint(bool enabled) noexcept;
 
     std::unique_ptr<GBACart::CartCommon> EjectGBACart() { return GBACartSlot.EjectCart(); }
 

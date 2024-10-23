@@ -1294,6 +1294,7 @@ bool EmuInstance::updateConsole() noexcept
 #else
     std::optional<GDBArgs> gdbargs = std::nullopt;
 #endif
+    bool debugprint = globalCfg.GetBool("DebugPrintEnabled");
 
     NDSArgs ndsargs {
             std::move(arm9bios),
@@ -1303,6 +1304,7 @@ bool EmuInstance::updateConsole() noexcept
             static_cast<AudioBitDepth>(globalCfg.GetInt("Audio.BitDepth")),
             static_cast<AudioInterpolation>(globalCfg.GetInt("Audio.Interpolation")),
             gdbargs,
+            debugprint,
     };
     NDSArgs* args = &ndsargs;
 
