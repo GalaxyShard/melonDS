@@ -1294,6 +1294,7 @@ bool EmuInstance::updateConsole(UpdateConsoleNDSArgs&& _ndsargs, UpdateConsoleGB
 #else
     optional<GDBArgs> gdbargs = std::nullopt;
 #endif
+    bool debugprint = globalCfg.GetBool("DebugPrintEnabled");
 
     NDSArgs ndsargs {
             std::move(nextndscart),
@@ -1305,6 +1306,7 @@ bool EmuInstance::updateConsole(UpdateConsoleNDSArgs&& _ndsargs, UpdateConsoleGB
             static_cast<AudioBitDepth>(globalCfg.GetInt("Audio.BitDepth")),
             static_cast<AudioInterpolation>(globalCfg.GetInt("Audio.Interpolation")),
             gdbargs,
+            debugprint,
     };
     NDSArgs* args = &ndsargs;
 

@@ -61,6 +61,8 @@ EmuSettingsDialog::EmuSettingsDialog(QWidget* parent) : QDialog(parent), ui(new 
 
     lastBIOSFolder = cfg.GetQString("LastBIOSFolder");
 
+    ui->cbDebugPrintEnabled->setChecked(cfg.GetBool("DebugPrintEnabled"));
+
     ui->chkExternalBIOS->setChecked(cfg.GetBool("Emu.ExternalBIOSEnable"));
     ui->txtBIOS9Path->setText(cfg.GetQString("DS.BIOS9Path"));
     ui->txtBIOS7Path->setText(cfg.GetQString("DS.BIOS7Path"));
@@ -259,6 +261,8 @@ void EmuSettingsDialog::done(int r)
 
             auto& cfg = emuInstance->getGlobalConfig();
             auto& instcfg = emuInstance->getLocalConfig();
+
+            cfg.SetBool("DebugPrintEnabled", ui->cbDebugPrintEnabled->isChecked());
 
             cfg.SetBool("Emu.ExternalBIOSEnable", ui->chkExternalBIOS->isChecked());
             cfg.SetQString("DS.BIOS9Path", ui->txtBIOS9Path->text());
