@@ -113,6 +113,7 @@ NDS::NDS(NDSArgs&& args, int type, void* userdata) noexcept :
 #ifdef JIT_ENABLED
     EnableJIT(args.JIT.has_value()),
 #endif
+    DebugPrint(args.DebugPrint),
     DMAs {
         DMA(0, 0, *this),
         DMA(0, 1, *this),
@@ -750,6 +751,11 @@ void NDS::SetGBASave(const u8* savedata, u32 savelen)
         GBACartSlot.SetSaveMemory(savedata, savelen);
     }
 
+}
+
+void NDS::SetDebugPrint(bool enabled) noexcept
+{
+    DebugPrint = enabled;
 }
 
 void NDS::LoadGBAAddon(int type)
