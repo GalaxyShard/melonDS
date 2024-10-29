@@ -284,6 +284,10 @@ void A_SVC(ARM* cpu)
         Platform::Log(LogLevel::Info, "%s", output.c_str());
         return;
     }
+    if (((cpu->CurInstr & 0xFF) == 0xFD || ((cpu->CurInstr >> 16) & 0xFF) == 0xFD)) {
+        Platform::Log(LogLevel::Info, (cpu->CurInstr & 0xFF) == 0xFD ? "0xFD called\n" : "0xFD0000 called\n");
+        return;
+    }
 
     u32 oldcpsr = cpu->CPSR;
     cpu->CPSR &= ~0xBF;
@@ -310,6 +314,10 @@ void T_SVC(ARM* cpu)
             output += c;
         }
         Platform::Log(LogLevel::Info, "%s", output.c_str());
+        return;
+    }
+    if (((cpu->CurInstr & 0xFF) == 0xFD || ((cpu->CurInstr >> 16) & 0xFF) == 0xFD)) {
+        Platform::Log(LogLevel::Info, (cpu->CurInstr & 0xFF) == 0xFD ? "0xFD called\n" : "0xFD0000 called\n");
         return;
     }
 
