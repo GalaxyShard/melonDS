@@ -65,10 +65,10 @@ const string kWifiSettingsPath = "wfcsettings.bin";
 extern Net net;
 
 
-EmuInstance::EmuInstance(int inst, std::optional<bool> arm9BreakOnStart, std::optional<bool> arm7BreakOnStart) :
+EmuInstance::EmuInstance(int inst, InstanceStartupOptions options) :
 #ifdef GDBSTUB_ENABLED
-    overrideArm9BreakOnStart(arm9BreakOnStart),
-    overrideArm7BreakOnStart(arm7BreakOnStart),
+    overrideArm9BreakOnStart(options.arm9BreakOnStart),
+    overrideArm7BreakOnStart(options.arm7BreakOnStart),
 #endif
     deleting(false),
     instanceID(inst),
@@ -155,7 +155,7 @@ EmuInstance::EmuInstance(int inst, std::optional<bool> arm9BreakOnStart, std::op
 }
 
 EmuInstance::EmuInstance(int inst) :
-    EmuInstance(inst, std::nullopt, std::nullopt)
+    EmuInstance(inst, {})
 {
 
 }
