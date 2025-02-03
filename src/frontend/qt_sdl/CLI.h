@@ -34,6 +34,8 @@ struct CommandLineOptions
     std::optional<QString> gbaRomArchivePath;
     bool fullscreen;
     bool boot;
+
+    std::vector<QString> logFiles;
 #ifdef GDBSTUB_ENABLED
     std::optional<bool> arm9BreakOnStart;
     std::optional<bool> arm7BreakOnStart;

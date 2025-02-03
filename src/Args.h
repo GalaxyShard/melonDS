@@ -108,6 +108,8 @@ struct NDSArgs
     AudioInterpolation Interpolation = AudioInterpolation::None;
     double OutputSampleRate = 48000.f;
 
+    std::function<void(Platform::LogLevel level, const char* fmt, va_list args)> Print = nullptr;
+
     /// How the GDB stub should be handled.
     /// Defaults to disabled.
     /// Ignored in builds that don't have the GDB stub included.
