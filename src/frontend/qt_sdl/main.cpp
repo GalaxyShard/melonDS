@@ -77,6 +77,7 @@ QString emuDirectory;
 
 const int kMaxEmuInstances = 16;
 EmuInstance* emuInstances[kMaxEmuInstances];
+std::string logFiles[kMaxEmuInstances];
 
 CameraManager* camManager[2];
 bool camStarted[2];
@@ -132,6 +133,8 @@ bool createEmuInstance(InstanceStartupOptions options)
 
     if (id == -1)
         return false;
+
+    options.logFile = logFiles[id];
 
     auto inst = new EmuInstance(id, options);
     emuInstances[id] = inst;
@@ -295,6 +298,19 @@ int main(int argc, char** argv)
     pathInit();
 
     CLI::CommandLineOptions* options = CLI::ManageArgs(melon);
+
+    if (options->logFiles.size() > kMaxEmuInstances)
+    {
+        QString errorStr = "Too many log files specified; only ";
+        errorStr += std::to_string(kMaxEmuInstances);
+        errorStr += " instances can be created";
+        QMessageBox::critical(nullptr, "melonDS", errorStr);
+        return 1;
+    }
+
+    for (int i = 0; i < options->logFiles.size(); ++i) {
+       logFiles[i] = options->logFiles[i].toStdString();
+    }
 
     // http://stackoverflow.com/questions/14543333/joystick-wont-work-using-sdl
     SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");

@@ -107,6 +107,8 @@ struct NDSArgs
     AudioBitDepth BitDepth = AudioBitDepth::Auto;
     AudioInterpolation Interpolation = AudioInterpolation::None;
 
+    std::function<void(Platform::LogLevel level, const char* fmt, va_list args)> Print = nullptr;
+
     /// How the GDB stub should be handled.
     /// Defaults to disabled.
     /// Ignored in builds that don't have the GDB stub included.

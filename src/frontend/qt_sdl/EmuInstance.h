@@ -20,11 +20,14 @@
 #define EMUINSTANCE_H
 
 #include <SDL2/SDL.h>
+#include <optional>
+#include <string>
 
 struct InstanceStartupOptions
 {
     std::optional<bool> arm9BreakOnStart;
     std::optional<bool> arm7BreakOnStart;
+    std::string logFile = "";
 };
 
 #include "main.h"
@@ -157,9 +160,13 @@ public:
     void touchScreen(int x, int y);
     void releaseScreen();
 
+    void Log(Common::Platform::LogLevel level, const char* fmt, ...) const;
+
     QMutex renderLock;
 
 private:
+    void logVaList(Common::Platform::LogLevel level, const char* fmt, va_list args) const;
+
     static int lastSep(const std::string& path);
     std::string getAssetPath(bool gba, const std::string& configpath, const std::string& ext, const std::string& file);
 
@@ -277,6 +284,8 @@ private:
     std::string baseGBAAssetName;
     bool changeGBACart;
     std::unique_ptr<melonDS::GBACart::CartCommon> nextGBACart;
+
+    FILE *logFile = nullptr;
 
 #ifdef GDBSTUB_ENABLED
     std::optional<bool> overrideArm9BreakOnStart = std::nullopt;

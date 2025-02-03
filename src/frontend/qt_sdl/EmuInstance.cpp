@@ -74,6 +74,15 @@ EmuInstance::EmuInstance(int inst, InstanceStartupOptions options) :
     globalCfg(Config::GetGlobalTable()),
     localCfg(Config::GetLocalTable(inst))
 {
+    if (options.logFile != "")
+    {
+        logFile = fopen(options.logFile.c_str(), "w");
+        if (logFile == nullptr)
+        {
+            Log(LogLevel::Error, "Failed to open log file at %s\n", options.logFile.c_str());
+        }
+    }
+
     consoleType = globalCfg.GetInt("Emu.ConsoleType");
 
     ndsSave = nullptr;
@@ -163,6 +172,11 @@ EmuInstance::EmuInstance(int inst) :
 
 EmuInstance::~EmuInstance()
 {
+    if (logFile)
+    {
+        fclose(logFile);
+    }
+
     deleting = true;
     deleteAllWindows();
 
@@ -182,6 +196,30 @@ EmuInstance::~EmuInstance()
     }
 }
 
+void EmuInstance::logVaList(LogLevel level, const char* fmt, va_list args) const
+{
+    if (logFile)
+    {
+        vfprintf(logFile, fmt, args);
+        fflush(logFile);
+    }
+    else
+    {
+        vprintf(fmt, args);
+    }
+}
+void EmuInstance::Log(LogLevel level, const char* fmt, ...) const
+{
+    if (fmt == nullptr)
+        return;
+
+    va_list args;
+    va_start(args, fmt);
+
+    logVaList(level, fmt, args);
+
+    va_end(args);
+}
 
 std::string EmuInstance::instanceFileSuffix()
 {
@@ -1306,6 +1344,11 @@ bool EmuInstance::updateConsole() noexcept
     std::optional<GDBArgs> gdbargs = std::nullopt;
 #endif
 
+    auto printfunction = [this] (LogLevel level, const char *fmt, va_list args)
+    {
+        this->logVaList(level, fmt, args);
+    };
+
     NDSArgs ndsargs {
             std::move(arm9bios),
             std::move(arm7bios),
@@ -1313,6 +1356,7 @@ bool EmuInstance::updateConsole() noexcept
             jitargs,
             static_cast<AudioBitDepth>(globalCfg.GetInt("Audio.BitDepth")),
             static_cast<AudioInterpolation>(globalCfg.GetInt("Audio.Interpolation")),
+            printfunction,
             gdbargs,
     };
     NDSArgs* args = &ndsargs;

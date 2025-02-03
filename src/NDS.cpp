@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <inttypes.h>
+#include <cstdarg>
 #include "NDS.h"
 #include "ARM.h"
 #include "NDSCart.h"
@@ -111,6 +112,7 @@ NDS::NDS(NDSArgs&& args, int type, void* userdata) noexcept :
 #ifdef JIT_ENABLED
     EnableJIT(args.JIT.has_value()),
 #endif
+    InternalPrint(args.Print),
     DMAs {
         DMA(0, 0, *this),
         DMA(0, 1, *this),
@@ -137,6 +139,19 @@ NDS::~NDS() noexcept
     // The destructor for each component is automatically called by the compiler
 }
 
+void NDS::Log(Platform::LogLevel level, const char* fmt, ...) {
+    if (fmt == nullptr)
+        return;
+
+    va_list args;
+    va_start(args, fmt);
+
+    if (this->InternalPrint)
+        this->InternalPrint(level, fmt, args);
+    else
+        vprintf(fmt, args);
+    va_end(args);
+}
 
 void NDS::SetARM9RegionTimings(u32 addrstart, u32 addrend, u32 region, int buswidth, int nonseq, int seq)
 {

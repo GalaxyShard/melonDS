@@ -236,6 +236,8 @@ private:
     bool EnableGDBStub = false;
 #endif
 
+    std::function<void(Platform::LogLevel level, const char* fmt, va_list args)> InternalPrint = nullptr;
+
 public: // TODO: Encapsulate the rest of these members
     void* UserData;
 
@@ -327,6 +329,8 @@ public: // TODO: Encapsulate the rest of these members
     void SetARM7RegionTimings(u32 addrstart, u32 addrend, u32 region, int buswidth, int nonseq, int seq);
 
     void LoadBIOS();
+
+    void Log(Platform::LogLevel level, const char* fmt, ...);
 
     /// @return \c true if the loaded ARM9 BIOS image is a known dump
     /// of a native DS-compatible ARM9 BIOS.

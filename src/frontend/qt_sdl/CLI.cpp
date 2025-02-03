@@ -44,6 +44,8 @@ CommandLineOptions* ManageArgs(QApplication& melon)
     parser.addOption(QCommandLineOption({"b", "boot"}, "Whether to boot firmware on startup. Defaults to \"auto\" (boot if NDS rom given)", "auto/always/never", "auto"));
     parser.addOption(QCommandLineOption({"f", "fullscreen"}, "Start melonDS in fullscreen mode"));
 
+    parser.addOption(QCommandLineOption("log", "Output file for logs; each --log will redirect output for one instance", "log"));
+
 #ifdef GDBSTUB_ENABLED
     parser.addOption(QCommandLineOption("break-arm9", "Yield ARM9 execution to the GDB stub immediately on startup"));
     parser.addOption(QCommandLineOption("break-arm7", "Yield ARM7 execution to the GDB stub immediately on startup"));
@@ -62,6 +64,12 @@ CommandLineOptions* ManageArgs(QApplication& melon)
     CommandLineOptions* options = new CommandLineOptions;
 
     options->fullscreen = parser.isSet("fullscreen");
+
+    auto logFiles = parser.values("log");
+    for (int i = 0; i < logFiles.length(); ++i)
+    {
+        options->logFiles.push_back(logFiles[i]);
+    }
 
 #ifdef GDBSTUB_ENABLED
     if (parser.isSet("break-arm9"))
