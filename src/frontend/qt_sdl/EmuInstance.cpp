@@ -1344,9 +1344,19 @@ bool EmuInstance::updateConsole() noexcept
     std::optional<GDBArgs> gdbargs = std::nullopt;
 #endif
 
-    auto printfunction = [this] (LogLevel level, const char *fmt, va_list args)
+    FILE *file = this->logFile;
+    auto printfunction = [file] (LogLevel level, const char *fmt, va_list args)
     {
-        this->logVaList(level, fmt, args);
+        if (file)
+        {
+            vfprintf(file, fmt, args);
+            fflush(file);
+        }
+        else
+        {
+            vprintf(fmt, args);
+        }
+        // this->logVaList(level, fmt, args);
     };
 
     NDSArgs ndsargs {
