@@ -31,7 +31,6 @@
 
 namespace melonDS
 {
-using Platform::Log;
 using Platform::LogLevel;
 
 #ifdef GDBSTUB_ENABLED
@@ -436,7 +435,7 @@ void ARM::RestoreCPSR()
         break;
 
     default:
-        Log(LogLevel::Warn, "!! attempt to restore CPSR under bad mode %02X, %08X\n", CPSR&0x1F, R[15]);
+        NDS.Log(LogLevel::Warn, "!! attempt to restore CPSR under bad mode %02X, %08X\n", CPSR&0x1F, R[15]);
         break;
     }
 
@@ -549,7 +548,7 @@ void ARM::TriggerIRQ()
 
 void ARMv5::PrefetchAbort()
 {
-    Log(LogLevel::Warn, "ARM9: prefetch abort (%08X)\n", R[15]);
+    NDS.Log(LogLevel::Warn, "ARM9: prefetch abort (%08X)\n", R[15]);
 
     u32 oldcpsr = CPSR;
     CPSR &= ~0xBF;
@@ -560,7 +559,7 @@ void ARMv5::PrefetchAbort()
     // so better take care of it
     if (!(PU_Map[ExceptionBase>>12] & 0x04))
     {
-        Log(LogLevel::Error, "!!!!! EXCEPTION REGION NOT EXECUTABLE. THIS IS VERY BAD!!\n");
+        NDS.Log(LogLevel::Error, "!!!!! EXCEPTION REGION NOT EXECUTABLE. THIS IS VERY BAD!!\n");
         NDS.Stop(Platform::StopReason::BadExceptionRegion);
         return;
     }
@@ -572,7 +571,7 @@ void ARMv5::PrefetchAbort()
 
 void ARMv5::DataAbort()
 {
-    Log(LogLevel::Warn, "ARM9: data abort (%08X)\n", R[15]);
+    NDS.Log(LogLevel::Warn, "ARM9: data abort (%08X)\n", R[15]);
 
     u32 oldcpsr = CPSR;
     CPSR &= ~0xBF;
@@ -625,7 +624,7 @@ void ARMv5::Execute()
                 && !NDS.JIT.SetupExecutableRegion(0, instrAddr, FastBlockLookup, FastBlockLookupStart, FastBlockLookupSize))
             {
                 NDS.ARM9Timestamp = NDS.ARM9Target;
-                Log(LogLevel::Error, "ARMv5 PC in non executable region %08X\n", R[15]);
+                NDS.Log(LogLevel::Error, "ARMv5 PC in non executable region %08X\n", R[15]);
                 return;
             }
 
@@ -765,7 +764,7 @@ void ARMv4::Execute()
                 && !NDS.JIT.SetupExecutableRegion(1, instrAddr, FastBlockLookup, FastBlockLookupStart, FastBlockLookupSize))
             {
                 NDS.ARM7Timestamp = NDS.ARM7Target;
-                Log(LogLevel::Error, "ARMv4 PC in non executable region %08X\n", R[15]);
+                NDS.Log(LogLevel::Error, "ARMv4 PC in non executable region %08X\n", R[15]);
                 return;
             }
 
@@ -970,7 +969,7 @@ u32 ARM::ReadReg(Gdb::Register reg)
     else if (reg == Register::spsr_abt) return ModeIs(0x17) ? CPSR : R_ABT[2];
     else if (reg == Register::spsr_und) return ModeIs(0x1b) ? CPSR : R_UND[2];
 
-    Log(LogLevel::Warn, "GDB reg read: unknown reg no %d\n", r);
+    NDS.Log(LogLevel::Warn, "GDB reg read: unknown reg no %d\n", r);
     return 0xdeadbeef;
 }
 void ARM::WriteReg(Gdb::Register reg, u32 v)
@@ -1042,7 +1041,7 @@ void ARM::WriteReg(Gdb::Register reg, u32 v)
     {
         *(ModeIs(0x1b) ? &CPSR : &R_UND[2]) = v;
     }
-    else Log(LogLevel::Warn, "GDB reg write: unknown reg no %d (write 0x%08x)\n", r, v);
+    else NDS.Log(LogLevel::Warn, "GDB reg write: unknown reg no %d (write 0x%08x)\n", r, v);
 }
 u32 ARM::ReadMem(u32 addr, int size)
 {
@@ -1067,7 +1066,7 @@ int ARM::RemoteCmd(const u8* cmd, size_t len)
 {
     (void)len;
 
-    Log(LogLevel::Info, "[ARMGDB] Rcmd: \"%s\"\n", cmd);
+    NDS.Log(LogLevel::Info, "[ARMGDB] Rcmd: \"%s\"\n", cmd);
     if (!strcmp((const char*)cmd, "reset") || !strcmp((const char*)cmd, "r"))
     {
         Reset();

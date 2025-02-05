@@ -48,7 +48,6 @@
 
 namespace melonDS
 {
-using namespace Platform;
 
 const s32 kMaxIterationCycles = 64;
 const s32 kIterationCycleMargin = 8;
@@ -1883,7 +1882,7 @@ void NDS::debug(u32 param)
     //for (int i = 0; i < 9; i++)
     //    printf("VRAM %c: %02X\n", 'A'+i, GPU->VRAMCNT[i]);
 
-    Platform::FileHandle* shit = Platform::OpenFile("debug/pokeplat.bin", FileMode::Write);
+    Platform::FileHandle* shit = Platform::OpenFile("debug/pokeplat.bin", Platform::FileMode::Write);
     Platform::FileWrite(ARM9.ITCM, 0x8000, 1, shit);
     for (u32 i = 0x02000000; i < 0x02400000; i+=4)
     {
@@ -4092,7 +4091,7 @@ void NDS::ARM7IOWrite8(u32 addr, u8 val)
 
     case 0x04000301:
         val &= 0xC0;
-        if      (val == 0x40) Stop(StopReason::GBAModeNotSupported);
+        if      (val == 0x40) Stop(Platform::StopReason::GBAModeNotSupported);
         else if (val == 0x80) ARM7.Halt(1);
         else if (val == 0xC0) EnterSleepMode();
         return;

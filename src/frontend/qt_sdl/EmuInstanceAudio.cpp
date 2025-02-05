@@ -188,7 +188,7 @@ void EmuInstance::micOpen()
     micDevice = SDL_OpenAudioDevice(mic, 1, &whatIwant, &whatIget, 0);
     if (!micDevice)
     {
-        Platform::Log(Platform::LogLevel::Error, "Mic init failed: %s\n", SDL_GetError());
+        Log(Platform::LogLevel::Error, "Mic init failed: %s\n", SDL_GetError());
     }
     else
     {
@@ -428,12 +428,12 @@ void EmuInstance::audioInit()
     audioDevice = SDL_OpenAudioDevice(NULL, 0, &whatIwant, &whatIget, SDL_AUDIO_ALLOW_FREQUENCY_CHANGE);
     if (!audioDevice)
     {
-        Platform::Log(Platform::LogLevel::Error, "Audio init failed: %s\n", SDL_GetError());
+        Log(Platform::LogLevel::Error, "Audio init failed: %s\n", SDL_GetError());
     }
     else
     {
         audioFreq = whatIget.freq;
-        Platform::Log(Platform::LogLevel::Info, "Audio output frequency: %d Hz\n", audioFreq);
+        Log(Platform::LogLevel::Info, "Audio output frequency: %d Hz\n", audioFreq);
         SDL_PauseAudioDevice(audioDevice, 1);
     }
 

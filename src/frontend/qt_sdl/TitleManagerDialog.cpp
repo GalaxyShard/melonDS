@@ -272,7 +272,7 @@ void TitleManagerDialog::onImportTitleData()
     QListWidgetItem* cur = ui->lstTitleList->currentItem();
     if (!cur)
     {
-        Log(LogLevel::Error, "what??\n");
+        emuInstance->Log(LogLevel::Error, "what??\n");
         return;
     }
 
@@ -293,7 +293,7 @@ void TitleManagerDialog::onImportTitleData()
         wantedsize = cur->data(Qt::UserRole+3).toUInt();
         break;
     default:
-        Log(LogLevel::Warn, "what??\n");
+        emuInstance->Log(LogLevel::Warn, "what??\n");
         return;
     }
 
@@ -341,7 +341,7 @@ void TitleManagerDialog::onExportTitleData()
     QListWidgetItem* cur = ui->lstTitleList->currentItem();
     if (!cur)
     {
-        Log(LogLevel::Error, "what??\n");
+        emuInstance->Log(LogLevel::Error, "what??\n");
         return;
     }
 
@@ -366,7 +366,7 @@ void TitleManagerDialog::onExportTitleData()
         wantedsize = cur->data(Qt::UserRole+3).toUInt();
         break;
     default:
-        Log(LogLevel::Warn, "what??\n");
+        emuInstance->Log(LogLevel::Warn, "what??\n");
         return;
     }
 

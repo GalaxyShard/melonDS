@@ -102,7 +102,7 @@ EmuInstance::EmuInstance(int inst, InstanceStartupOptions options) :
     double val = globalCfg.GetDouble("TargetFPS");
     if (val == 0.0)
     {
-        Platform::Log(Platform::LogLevel::Error, "Target FPS in config invalid\n");
+        Log(Platform::LogLevel::Error, "Target FPS in config invalid\n");
         targetFPS = 60.0;
     }
     else targetFPS = val;
@@ -110,7 +110,7 @@ EmuInstance::EmuInstance(int inst, InstanceStartupOptions options) :
     val = globalCfg.GetDouble("FastForwardFPS");
     if (val == 0.0)
     {
-        Platform::Log(Platform::LogLevel::Error, "Fast-Forward FPS in config invalid\n");
+        Log(Platform::LogLevel::Error, "Fast-Forward FPS in config invalid\n");
         fastForwardFPS = 60.0;
     }
     else fastForwardFPS = val;
@@ -118,7 +118,7 @@ EmuInstance::EmuInstance(int inst, InstanceStartupOptions options) :
     val = globalCfg.GetDouble("SlowmoFPS");
     if (val == 0.0)
     {
-        Platform::Log(Platform::LogLevel::Error, "Slow-Mo FPS in config invalid\n");
+        Log(Platform::LogLevel::Error, "Slow-Mo FPS in config invalid\n");
         slowmoFPS = 60.0;
     }
     else slowmoFPS = val;
@@ -739,21 +739,21 @@ bool EmuInstance::loadState(const std::string& filename)
     Platform::FileHandle* file = Platform::OpenFile(filename, Platform::FileMode::Read);
     if (file == nullptr)
     { // If we couldn't open the state file...
-        Platform::Log(Platform::LogLevel::Error, "Failed to open state file \"%s\"\n", filename.c_str());
+        Log(Platform::LogLevel::Error, "Failed to open state file \"%s\"\n", filename.c_str());
         return false;
     }
 
     std::unique_ptr<Savestate> backup = std::make_unique<Savestate>(Savestate::DEFAULT_SIZE);
     if (backup->Error)
     { // If we couldn't allocate memory for the backup...
-        Platform::Log(Platform::LogLevel::Error, "Failed to allocate memory for state backup\n");
+        Log(Platform::LogLevel::Error, "Failed to allocate memory for state backup\n");
         Platform::CloseFile(file);
         return false;
     }
 
     if (!nds->DoSavestate(backup.get()) || backup->Error)
     { // Back up the emulator's state. If that failed...
-        Platform::Log(Platform::LogLevel::Error, "Failed to back up state, aborting load (from \"%s\")\n", filename.c_str());
+        Log(Platform::LogLevel::Error, "Failed to back up state, aborting load (from \"%s\")\n", filename.c_str());
         Platform::CloseFile(file);
         return false;
     }
@@ -767,7 +767,7 @@ bool EmuInstance::loadState(const std::string& filename)
     std::vector<u8> buffer(size);
     if (Platform::FileRead(buffer.data(), size, 1, file) == 0)
     { // Read the state file into the buffer. If that failed...
-        Platform::Log(Platform::LogLevel::Error, "Failed to read %u-byte state file \"%s\"\n", size, filename.c_str());
+        Log(Platform::LogLevel::Error, "Failed to read %u-byte state file \"%s\"\n", size, filename.c_str());
         Platform::CloseFile(file);
         return false;
     }
@@ -778,7 +778,7 @@ bool EmuInstance::loadState(const std::string& filename)
 
     if (!nds->DoSavestate(state.get()) || state->Error)
     { // If we couldn't load the savestate from the buffer...
-        Platform::Log(Platform::LogLevel::Error, "Failed to load state file \"%s\" into emulator\n", filename.c_str());
+        Log(Platform::LogLevel::Error, "Failed to load state file \"%s\" into emulator\n", filename.c_str());
         return false;
     }
 
@@ -828,7 +828,7 @@ bool EmuInstance::saveState(const std::string& filename)
 
     if (Platform::FileWrite(state.Buffer(), state.Length(), 1, file) == 0)
     { // Write the Savestate buffer to the file. If that fails...
-        Platform::Log(Platform::Error,
+        Log(Platform::Error,
                       "Failed to write %d-byte savestate to %s\n",
                       state.Length(),
                       filename.c_str()
@@ -1646,7 +1646,7 @@ pair<unique_ptr<Firmware>, string> EmuInstance::generateDefaultFirmware()
 
         if (!FileRead(firmware->GetExtendedAccessPointPosition(), TOTAL_WFC_SETTINGS_SIZE, 1, f))
         { // If we couldn't read the Wi-fi settings from this file...
-            Platform::Log(Platform::LogLevel::Warn, "Failed to read Wi-fi settings from \"%s\"; using defaults instead\n", wfcsettingspath.c_str());
+            Log(Platform::LogLevel::Warn, "Failed to read Wi-fi settings from \"%s\"; using defaults instead\n", wfcsettingspath.c_str());
 
             firmware->GetAccessPoints() = {
                     Firmware::WifiAccessPoint(consoleType),
