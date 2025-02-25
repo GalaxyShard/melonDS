@@ -27,7 +27,7 @@ struct InstanceStartupOptions
 {
     std::optional<bool> arm9BreakOnStart;
     std::optional<bool> arm7BreakOnStart;
-    std::string logFile = "";
+    FILE *logFile = nullptr;
 };
 
 #include "main.h"

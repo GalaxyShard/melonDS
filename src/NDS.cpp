@@ -112,7 +112,7 @@ NDS::NDS(NDSArgs&& args, int type, void* userdata) noexcept :
 #ifdef JIT_ENABLED
     EnableJIT(args.JIT.has_value()),
 #endif
-    InternalPrint(args.Print),
+    PrintHandle(args.PrintHandle),
     DMAs {
         DMA(0, 0, *this),
         DMA(0, 1, *this),
@@ -146,10 +146,15 @@ void NDS::Log(Platform::LogLevel level, const char* fmt, ...) {
     va_list args;
     va_start(args, fmt);
 
-    if (this->InternalPrint)
-        this->InternalPrint(level, fmt, args);
+    if (this->PrintHandle)
+    {
+        vfprintf(this->PrintHandle, fmt, args);
+        fflush(this->PrintHandle);
+    }
     else
+    {
         vprintf(fmt, args);
+    }
     va_end(args);
 }
 

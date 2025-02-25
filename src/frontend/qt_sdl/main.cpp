@@ -77,7 +77,7 @@ QString emuDirectory;
 
 const int kMaxEmuInstances = 16;
 EmuInstance* emuInstances[kMaxEmuInstances];
-std::string logFiles[kMaxEmuInstances];
+FILE *logFiles[kMaxEmuInstances] = {};
 
 CameraManager* camManager[2];
 bool camStarted[2];
@@ -299,6 +299,7 @@ int main(int argc, char** argv)
 
     CLI::CommandLineOptions* options = CLI::ManageArgs(melon);
 
+    memset(logFiles, 0, sizeof logFiles);
     if (options->logFiles.size() > kMaxEmuInstances)
     {
         QString errorStr = "Too many log files specified; only ";
@@ -308,8 +309,14 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    for (int i = 0; i < options->logFiles.size(); ++i) {
-       logFiles[i] = options->logFiles[i].toStdString();
+    for (int i = 0; i < options->logFiles.size(); ++i)
+    {
+        std::string path = options->logFiles[i].toStdString();
+        logFiles[i] = fopen(path.c_str(), "w");
+        if (!logFiles[i])
+        {
+            printf("Failed to open log file at %s\n", path.c_str());
+        }
     }
 
     // http://stackoverflow.com/questions/14543333/joystick-wont-work-using-sdl

@@ -236,7 +236,7 @@ private:
     bool EnableGDBStub = false;
 #endif
 
-    std::function<void(Platform::LogLevel level, const char* fmt, va_list args)> InternalPrint = nullptr;
+    FILE *PrintHandle = nullptr;
 
 public: // TODO: Encapsulate the rest of these members
     void* UserData;
