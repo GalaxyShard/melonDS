@@ -74,14 +74,7 @@ EmuInstance::EmuInstance(int inst, InstanceStartupOptions options) :
     globalCfg(Config::GetGlobalTable()),
     localCfg(Config::GetLocalTable(inst))
 {
-    if (options.logFile != "")
-    {
-        logFile = fopen(options.logFile.c_str(), "w");
-        if (logFile == nullptr)
-        {
-            Log(LogLevel::Error, "Failed to open log file at %s\n", options.logFile.c_str());
-        }
-    }
+    logFile = options.logFile;
 
     consoleType = globalCfg.GetInt("Emu.ConsoleType");
 
@@ -172,10 +165,6 @@ EmuInstance::EmuInstance(int inst) :
 
 EmuInstance::~EmuInstance()
 {
-    if (logFile)
-    {
-        fclose(logFile);
-    }
 
     deleting = true;
     deleteAllWindows();
@@ -1360,20 +1349,6 @@ bool EmuInstance::updateConsole() noexcept
     std::optional<GDBArgs> gdbargs = std::nullopt;
 #endif
 
-    FILE *file = this->logFile;
-    auto printfunction = [file] (LogLevel level, const char *fmt, va_list args)
-    {
-        if (file)
-        {
-            vfprintf(file, fmt, args);
-            fflush(file);
-        }
-        else
-        {
-            vprintf(fmt, args);
-        }
-        // this->logVaList(level, fmt, args);
-    };
 
     NDSArgs ndsargs {
             std::move(arm9bios),
@@ -1383,7 +1358,7 @@ bool EmuInstance::updateConsole() noexcept
             static_cast<AudioBitDepth>(globalCfg.GetInt("Audio.BitDepth")),
             static_cast<AudioInterpolation>(globalCfg.GetInt("Audio.Interpolation")),
             (double) audioFreq,
-            printfunction,
+            this->logFile,
             gdbargs,
     };
     NDSArgs* args = &ndsargs;
