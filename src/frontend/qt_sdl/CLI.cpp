@@ -50,6 +50,7 @@ CommandLineOptions* ManageArgs(QApplication& melon)
     parser.addOption(QCommandLineOption("no-break-arm9", "Do not wait for GDB on ARM9 startup, even if the option to do so is enabled"));
     parser.addOption(QCommandLineOption("no-break-arm7", "Do not wait for GDB on ARM9 startup, even if the option to do so is enabled"));
 #endif
+    parser.addOption(QCommandLineOption("launch-mp", "Launch a second instance for multiplayer"));
 
 #ifdef ARCHIVE_SUPPORT_ENABLED
     parser.addOption(QCommandLineOption({"a", "archive-file"}, "Specify file to load inside an archive given (NDS)", "rom"));
@@ -80,6 +81,9 @@ CommandLineOptions* ManageArgs(QApplication& melon)
         options->arm7BreakOnStart = false;
     }
 #endif
+    if (parser.isSet("launch-mp")) {
+        options->launchInstance = true;
+    }
 
     QStringList posargs = parser.positionalArguments();
     switch (posargs.size())

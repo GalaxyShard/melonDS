@@ -38,6 +38,7 @@ struct CommandLineOptions
     std::optional<bool> arm9BreakOnStart;
     std::optional<bool> arm7BreakOnStart;
 #endif
+    bool launchInstance = false;
 };
 
 extern CommandLineOptions* ManageArgs(QApplication& melon);
