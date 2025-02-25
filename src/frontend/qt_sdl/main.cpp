@@ -356,6 +356,11 @@ int main(int argc, char** argv)
 #endif
     createEmuInstance(instanceOptions);
 
+    if (options->launchInstance)
+    {
+        createEmuInstance({});
+    }
+
     {
         MainWindow* win = emuInstances[0]->getMainWindow();
         bool memberSyntaxUsed = false;
